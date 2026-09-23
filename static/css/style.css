@@ -927,9 +927,10 @@ a:hover { color: var(--oro); }
   transition: var(--transicion);
 }
 .footer-links a:hover { color: var(--terracota); }
+.site-footer .brand-logo { color: #722f37; }
 .footer-tagline {
-  color: #c9a24b;
-  font-size: 0.92rem;
+  color: #ffffff;
+  font-size: 0.9rem;
   max-width: 26rem;
 }
 .redes-sociales a {
