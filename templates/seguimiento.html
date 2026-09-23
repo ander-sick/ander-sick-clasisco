@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block titulo %}Seguimiento {{ pedido.numero }} | CLASISCO{% endblock %}
+
+{% block contenido %}
+<div class="page-header">
+  <div class="container">
+    <h1 class="page-title">Seguimiento del pedido</h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="{% url 'tienda:inicio' %}">Inicio</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'pedidos:pedidos' %}">Mis pedidos</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ pedido.numero }}</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<section class="seccion">
+  <div class="container">
+    <div class="row g-4">
+      <!-- Estado -->
+      <div class="col-lg-8">
+        <div class="checkout-card">
+          <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+              <span class="pedido-numero">{{ pedido.numero }}</span>
+              <p class="text-muted small mb-0">Realizado el {{ pedido.creado|date:"d M Y, H:i" }}</p>
+            </div>
+            <span class="badge estado-badge estado-{{ pedido.estado.slug }}">{{ pedido.estado.nombre }}</span>
+          </div>
+
+          {% if pedido.es_cancelado %}
+            <div class="alert alert-danger">
+              <i class="fa-solid fa-circle-xmark me-2"></i>
+              Este pedido fue cancelado. Si tienes dudas, contacta a nuestro equipo de atención.
+            </div>
+          {% else %}
+            <!-- Línea de tiempo visual -->
+            <div class="timeline-pasos">
+              {% for paso in pasos %}
+                <div class="timeline-paso {% if paso.completado %}completado{% endif %} {% if paso.actual %}actual{% endif %}">
+                  <div class="timeline-circulo">
+                    {% if paso.completado %}
+                      <i class="fa-solid fa-check"></i>
+                    {% else %}
+                      <i class="fa-regular fa-circle"></i>
+                    {% endif %}
+                  </div>
+                  <div class="timeline-contenido">
+                    <strong>{{ paso.estado.nombre }}</strong>
+                    <p class="text-muted small mb-0">{{ paso.estado.descripcion }}</p>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+
+            {% if pedido.envio_info.enviado %}
+              <div class="alert alert-success mt-4">
+                <i class="fa-solid fa-truck-fast me-2"></i>
+                Tu pedido fue enviado por <strong>{{ pedido.envio_info.empresa|default:"nuestra paquetería" }}</strong>.
+                {% if pedido.envio_info.numero_seguimiento %}
+                  Número de guía: <strong>{{ pedido.envio_info.numero_seguimiento }}</strong>
+                {% endif %}
+                {% if pedido.envio_info.fecha_entrega_estimada %}
+                  <br><small>Entrega estimada: {{ pedido.envio_info.fecha_entrega_estimada|date:"d M Y" }}</small>
+                {% endif %}
+              </div>
+            {% else %}
+              <div class="alert alert-info mt-4">
+                <i class="fa-solid fa-clock me-2"></i>
+                Tu pedido está en proceso; te notificaremos cuando sea enviado.
+                {% if pedido.envio_info.fecha_entrega_estimada %}
+                  <br><small>Entrega estimada: {{ pedido.envio_info.fecha_entrega_estimada|date:"d M Y" }}</small>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Detalles -->
+      <div class="col-lg-4">
+        <div class="resumen-card mb-4">
+          <h5 class="resumen-titulo">Productos</h5>
+          {% for detalle in pedido.detalles.all %}
+            <div class="d-flex justify-content-between small mb-2">
+              <span>{{ detalle.cantidad }} × {{ detalle.nombre }}{% if detalle.talla %} <small class="text-muted">(Talla {{ detalle.talla }})</small>{% endif %}</span>
+              <span>${{ detalle.subtotal|floatformat:2 }}</span>
+            </div>
+          {% endfor %}
+          <hr>
+          <div class="resumen-linea"><span>Subtotal</span><span>${{ pedido.subtotal|floatformat:2 }}</span></div>
+          {% if pedido.descuento %}
+            <div class="resumen-linea text-success"><span>Descuento</span><span>− ${{ pedido.descuento|floatformat:2 }}</span></div>
+          {% endif %}
+          <div class="resumen-linea"><span>Envío</span><span>{% if pedido.envio %}${{ pedido.envio|floatformat:2 }}{% else %}Gratis{% endif %}</span></div>
+          <div class="resumen-linea total"><span>Total</span><span>${{ pedido.total|floatformat:2 }}</span></div>
+        </div>
+
+        <div class="checkout-card">
+          <h6 class="fw-semibold"><i class="fa-solid fa-location-dot me-2"></i>Dirección de envío</h6>
+          <p class="small text-muted mb-0">{{ pedido.direccion_envio|linebreaksbr }}</p>
+          <p class="small mb-0 mt-2"><i class="fa-solid fa-credit-card me-1"></i>{{ pedido.get_metodo_pago_display }}</p>
+          <p class="small mb-0"><i class="fa-solid fa-receipt me-1"></i>Pago: {{ pedido.get_estado_pago_display }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,1 @@
+"""Aplicación de tienda de CLASISCO: productos, carrito y favoritos."""

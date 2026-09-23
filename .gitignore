@@ -1,0 +1,29 @@
+# Entorno y dependencias
+.env
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Base de datos
+db.sqlite3
+db.sqlite3-journal
+
+# Archivos estáticos y multimedia generados
+staticfiles/
+media/productos/*
+media/categorias/*
+media/marcas/*
+media/perfiles/*
+!media/**/.gitkeep
+
+# IDE y sistema
+.idea/
+.vscode/
+*.swp
+Thumbs.db
+.DS_Store
+
+# Logs
+*.log

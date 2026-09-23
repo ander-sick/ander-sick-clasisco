@@ -1,0 +1,51 @@
+<!-- Tarjeta de producto reutilizable -->
+<div class="product-card">
+  <div class="product-thumb">
+    <a href="{{ producto.get_absolute_url }}" aria-label="{{ producto.nombre }}">
+      {% if producto.imagen %}
+        <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" loading="lazy">
+      {% else %}
+        <div class="img-placeholder"><i class="fa-solid fa-shirt"></i></div>
+      {% endif %}
+    </a>
+    {% if producto.descuento_porcentaje %}
+      <span class="badge-descuento">-{{ producto.descuento_porcentaje }}%</span>
+    {% endif %}
+    {% if producto.es_nuevo %}
+      <span class="badge-nuevo">Nuevo</span>
+    {% endif %}
+    {% if producto.stock == 0 %}
+      <span class="badge-agotado">Agotado</span>
+    {% endif %}
+    <button type="button" class="btn-fav" data-producto="{{ producto.id }}"
+            data-url="{% url 'tienda:alternar_favorito' %}" aria-label="Agregar a favoritos"
+            title="Agregar a favoritos">
+      <i class="fa-regular fa-heart"></i>
+    </button>
+  </div>
+  <div class="product-info">
+    <span class="product-marca">{{ producto.marca.nombre|default:"CLASISCO" }}</span>
+    <h3 class="product-nombre">
+      <a href="{{ producto.get_absolute_url }}">{{ producto.nombre }}</a>
+    </h3>
+    <div class="product-precios">
+      {% if producto.precio_anterior and producto.precio_anterior > producto.precio %}
+        <span class="precio-anterior">${{ producto.precio_anterior|floatformat:2 }}</span>
+      {% endif %}
+      <span class="precio">${{ producto.precio|floatformat:2 }}</span>
+    </div>
+    {% if producto.tallas.all %}
+      <div class="product-tallas mb-2">
+        {% for talla in producto.tallas.all|slice:":4" %}
+          <span class="talla-chip">{{ talla.nombre }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
+    <button type="button" class="btn btn-add-cart" data-producto="{{ producto.id }}"
+            data-url="{% url 'tienda:agregar_carrito' %}"
+            data-url-producto="{{ producto.get_absolute_url }}"
+            {% if producto.tallas.all %}data-tiene-tallas="1"{% endif %}>
+      <i class="fa-solid fa-cart-plus me-1"></i>Agregar al carrito
+    </button>
+  </div>
+</div>

@@ -1,0 +1,1 @@
+"""Aplicación de pedidos de CLASISCO: checkout, pagos, envíos y seguimiento."""

@@ -1,0 +1,73 @@
+/* ============================================================
+   CLASISCO — Diseño responsive
+   Celulares, tablets, laptops y escritorio.
+   ============================================================ */
+
+/* Tablets (≤ 992px) */
+@media (max-width: 991.98px) {
+  .hero { padding: 3.5rem 0; text-align: center; }
+  .hero-descripcion { margin-left: auto; margin-right: auto; }
+
+  .cart-row,
+  .cart-head {
+    grid-template-columns: 2.5fr 0.9fr 1.2fr 2.4rem;
+  }
+  .cart-precio { display: none; }
+  .cart-head span:nth-child(2) { display: none; }
+
+  .filters-card { position: static; }
+}
+
+/* Celulares (≤ 768px) */
+@media (max-width: 767.98px) {
+  .seccion { padding: 2.6rem 0; }
+  .section-titulo { font-size: 1.55rem; }
+
+  .hero-titulo { font-size: 2.1rem; }
+  .hero-figura { display: none; }
+
+  /* Carrito como tarjetas apiladas */
+  .cart-head { display: none; }
+  .cart-row {
+    grid-template-columns: 1fr auto;
+    gap: 0.8rem;
+    padding: 1rem;
+  }
+  .cart-producto { grid-column: 1 / -1; }
+  .cart-cantidad { grid-column: 1; }
+  .cart-subtotal { grid-column: 1; font-size: 1rem; }
+  .cart-acciones { grid-column: 2; grid-row: 2 / span 2; align-self: center; }
+  .cart-precio { display: none; }
+
+  .pedido-precio {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.8rem;
+  }
+
+  .resumen-card, .filters-card { position: static; }
+
+  .gallery-principal { aspect-ratio: 1 / 1.1; }
+
+  .confirmacion-resumen { text-align: left; }
+  .pedido-numero-box { padding: 0.8rem 1.2rem; }
+
+  .topbar span:first-child { font-size: 0.72rem; }
+  .topbar .d-md-inline { display: none !important; }
+
+  .error-codigo { font-size: 5rem; }
+}
+
+/* Centrales muy pequeños (≤ 480px) */
+@media (max-width: 479.98px) {
+  .product-card .btn-add-cart { font-size: 0.8rem; padding: 0.5rem; }
+  .brand-logo { font-size: 1.3rem; }
+}
+
+/* Impresión */
+@media print {
+  .site-header, .site-footer, .btn, .qty-control, .cart-acciones { display: none !important; }
+  body { background: #fff; color: #000; }
+  .cart-table, .resumen-card { border-color: #000; }
+}

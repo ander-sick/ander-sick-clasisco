@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block titulo %}Finalizar compra | CLASISCO{% endblock %}
+
+{% block contenido %}
+<div class="page-header">
+  <div class="container">
+    <h1 class="page-title">Finalizar compra</h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="{% url 'tienda:inicio' %}">Inicio</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'tienda:carrito' %}">Carrito</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<section class="seccion">
+  <div class="container">
+    <form method="post" id="form-checkout" novalidate>
+      {% csrf_token %}
+      <div class="row g-4">
+        <div class="col-lg-8">
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+          {% endif %}
+
+          <!-- Dirección -->
+          <div class="checkout-card mb-4">
+            <h5 class="checkout-titulo"><i class="fa-solid fa-location-dot me-2"></i>Dirección de envío</h5>
+            {% if tiene_direcciones %}
+              <div class="mb-3">
+                <label class="form-label fw-semibold" for="{{ form.direccion.id_for_label }}">Usar una dirección guardada</label>
+                {{ form.direccion }}
+              </div>
+              <p class="text-muted small">o registra una nueva dirección:</p>
+            {% endif %}
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.nombre_completo.id_for_label }}">Nombre completo *</label>
+                {{ form.nombre_completo }}
+                {{ form.nombre_completo.errors }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.telefono.id_for_label }}">Teléfono *</label>
+                {{ form.telefono }}
+                {{ form.telefono.errors }}
+              </div>
+              <div class="col-12">
+                <label class="form-label" for="{{ form.calle.id_for_label }}">Calle y número *</label>
+                {{ form.calle }}
+                {{ form.calle.errors }}
+              </div>
+              <div class="col-md-4">
+                <label class="form-label" for="{{ form.ciudad.id_for_label }}">Ciudad *</label>
+                {{ form.ciudad }}
+                {{ form.ciudad.errors }}
+              </div>
+              <div class="col-md-4">
+                <label class="form-label" for="{{ form.estado.id_for_label }}">Estado *</label>
+                {{ form.estado }}
+                {{ form.estado.errors }}
+              </div>
+              <div class="col-md-4">
+                <label class="form-label" for="{{ form.codigo_postal.id_for_label }}">Código postal *</label>
+                {{ form.codigo_postal }}
+                {{ form.codigo_postal.errors }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.pais.id_for_label }}">País *</label>
+                {{ form.pais }}
+                {{ form.pais.errors }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="{{ form.etiqueta.id_for_label }}">Etiqueta</label>
+                {{ form.etiqueta }}
+              </div>
+              <div class="col-12">
+                <label class="form-label" for="{{ form.referencias.id_for_label }}">Referencias</label>
+                {{ form.referencias }}
+              </div>
+              <div class="col-12">
+                <div class="form-check">
+                  {{ form.guardar_direccion }}
+                  <label class="form-check-label" for="{{ form.guardar_direccion.id_for_label }}">
+                    Guardar esta dirección para próximas compras
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Método de pago -->
+          <div class="checkout-card mb-4">
+            <h5 class="checkout-titulo"><i class="fa-solid fa-credit-card me-2"></i>Método de pago</h5>
+            <div class="metodos-pago-checkout">
+              {% for valor, etiqueta in metodos_pago %}
+                <div class="metodo-pago">
+                  <input type="radio" name="metodo_pago" value="{{ valor }}" id="metodo-{{ valor }}"
+                         {% if form.metodo_pago.value == valor %}checked{% endif %}>
+                  <label for="metodo-{{ valor }}">
+                    {% if valor == "tarjeta" %}<i class="fa-solid fa-credit-card me-2"></i>
+                    {% elif valor == "transferencia" %}<i class="fa-solid fa-building-columns me-2"></i>
+                    {% elif valor == "contraentrega" %}<i class="fa-solid fa-money-bill-wave me-2"></i>
+                    {% else %}<i class="fa-brands fa-paypal me-2"></i>{% endif %}
+                    {{ etiqueta }}
+                  </label>
+                </div>
+              {% endfor %}
+            </div>
+            <div class="alert alert-info mt-3 small mb-0" id="aviso-pago">
+              <i class="fa-solid fa-circle-info me-1"></i>La confirmación del pago se gestionará en el siguiente paso (simulado en desarrollo).
+            </div>
+          </div>
+
+          <!-- Notas -->
+          <div class="checkout-card mb-4">
+            <h5 class="checkout-titulo"><i class="fa-solid fa-note-sticky me-2"></i>Notas del pedido</h5>
+            {{ form.notas }}
+          </div>
+        </div>
+
+        <!-- Resumen -->
+        <div class="col-lg-4">
+          <div class="resumen-card">
+            <h5 class="resumen-titulo">Tu pedido</h5>
+            <div class="checkout-items mb-3">
+              {% for item in carrito.items.all %}
+                <div class="checkout-item">
+                  <span class="checkout-item-cantidad">{{ item.cantidad }} ×</span>
+                  <span class="flex-grow-1">{{ item.producto.nombre }}
+                    {% if item.talla %}<small class="text-muted"> · Talla {{ item.talla.nombre }}</small>{% endif %}
+                  </span>
+                  <span>${{ item.subtotal|floatformat:2 }}</span>
+                </div>
+              {% endfor %}
+            </div>
+            <div class="resumen-linea"><span>Subtotal</span><span>${{ totales.subtotal|floatformat:2 }}</span></div>
+            {% if totales.descuento %}
+              <div class="resumen-linea text-success"><span>Descuento</span><span>− ${{ totales.descuento|floatformat:2 }}</span></div>
+            {% endif %}
+            <div class="resumen-linea"><span>Envío</span><span>{% if totales.envio %}${{ totales.envio|floatformat:2 }}{% else %}Gratis{% endif %}</span></div>
+            <hr>
+            <div class="resumen-linea total mb-3"><span>Total</span><span>${{ totales.total|floatformat:2 }}</span></div>
+            <button type="submit" class="btn btn-cta btn-lg w-100" id="btn-confirmar">
+              <i class="fa-solid fa-shield-halved me-2"></i>Confirmar pedido
+            </button>
+            <p class="text-muted small mt-3 mb-0 text-center">
+              Al confirmar aceptas nuestros términos y condiciones.
+            </p>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{% load static %}
+<script src="{% static 'js/checkout.js' %}"></script>
+{% endblock %}

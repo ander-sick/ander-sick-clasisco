@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block titulo %}Mi carrito | CLASISCO{% endblock %}
+
+{% block contenido %}
+<div class="page-header">
+  <div class="container">
+    <h1 class="page-title">Mi carrito</h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="{% url 'tienda:inicio' %}">Inicio</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Carrito</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<section class="seccion">
+  <div class="container">
+    {% if carrito and carrito.cantidad_items %}
+      <div class="row g-4">
+        <div class="col-lg-8">
+          <div class="cart-table">
+            <div class="cart-head d-none d-md-grid">
+              <span>Producto</span><span>Precio</span><span>Cantidad</span><span>Subtotal</span><span></span>
+            </div>
+            {% for item in carrito.items.all %}
+              <div class="cart-row" id="fila-item-{{ item.id }}">
+                <div class="cart-producto">
+                  <a href="{{ item.producto.get_absolute_url }}" class="cart-imagen">
+                    {% if item.producto.imagen %}
+                      <img src="{{ item.producto.imagen.url }}" alt="{{ item.producto.nombre }}">
+                    {% else %}
+                      <div class="img-placeholder"><i class="fa-solid fa-shirt"></i></div>
+                    {% endif %}
+                  </a>
+                  <div>
+                    <a class="fw-semibold text-decoration-none text-dark" href="{{ item.producto.get_absolute_url }}">{{ item.producto.nombre }}</a>
+                    <div class="text-muted small">
+                      {% if item.talla %}<span>Talla: {{ item.talla.nombre }}</span>{% endif %}
+                      {% if item.color %}<span class="ms-2">Color: {{ item.color.nombre }}</span>{% endif %}
+                    </div>
+                    {% if item.producto.marca %}<span class="text-muted small">{{ item.producto.marca.nombre }}</span>{% endif %}
+                  </div>
+                </div>
+                <div class="cart-precio">${{ item.producto.precio|floatformat:2 }}</div>
+                <div class="cart-cantidad">
+                  <div class="qty-control">
+                    <button type="button" class="qty-btn" data-accion="-">−</button>
+                    <input type="number" class="qty-input" value="{{ item.cantidad }}" min="1"
+                           max="{{ item.producto.stock|default:999 }}" data-item="{{ item.id }}"
+                           data-url="{% url 'tienda:actualizar_carrito' item.id %}">
+                    <button type="button" class="qty-btn" data-accion="+">+</button>
+                  </div>
+                </div>
+                <div class="cart-subtotal" id="subtotal-item-{{ item.id }}">${{ item.subtotal|floatformat:2 }}</div>
+                <div class="cart-acciones">
+                  <form method="post" action="{% url 'tienda:eliminar_carrito' item.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-link text-danger cart-eliminar" aria-label="Eliminar">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+          <a class="btn btn-outline-dark mt-3" href="{% url 'tienda:productos' %}">
+            <i class="fa-solid fa-arrow-left me-2"></i>Continuar comprando
+          </a>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="resumen-card">
+            <h5 class="resumen-titulo">Resumen del pedido</h5>
+            <div class="resumen-linea"><span>Subtotal</span><span id="resumen-subtotal">${{ totales.subtotal|floatformat:2 }}</span></div>
+            {% if totales.descuento %}
+              <div class="resumen-linea text-success"><span>Descuento</span><span id="resumen-descuento">− ${{ totales.descuento|floatformat:2 }}</span></div>
+            {% else %}
+              <div class="resumen-linea text-success d-none" id="fila-descuento"><span>Descuento</span><span id="resumen-descuento">− $0.00</span></div>
+            {% endif %}
+            <div class="resumen-linea"><span>Envío</span><span id="resumen-envio">
+              {% if totales.envio %}${{ totales.envio|floatformat:2 }}{% else %}<span class="text-success">Gratis</span>{% endif %}
+            </span></div>
+            <hr>
+            <div class="resumen-linea total"><span>Total</span><span id="resumen-total">${{ totales.total|floatformat:2 }}</span></div>
+            <p class="text-muted small mt-2 mb-3">
+              <i class="fa-solid fa-truck-fast me-1"></i>Envío gratis en compras superiores a $1,000.
+            </p>
+            <a class="btn btn-cta btn-lg w-100" href="{% url 'pedidos:checkout' %}">
+              <i class="fa-solid fa-lock me-2"></i>Finalizar compra
+            </a>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="text-center py-5">
+        <i class="fa-solid fa-bag-shopping fa-4x text-muted mb-3"></i>
+        <h3>Tu carrito está vacío</h3>
+        <p class="text-muted">Descubre nuestros productos y agrega tus favoritos.</p>
+        <a class="btn btn-cta btn-lg" href="{% url 'tienda:productos' %}">Ir a la tienda</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{% load static %}
+<script src="{% static 'js/carrito.js' %}"></script>
+{% endblock %}

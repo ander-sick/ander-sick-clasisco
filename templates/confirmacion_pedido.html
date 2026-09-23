@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block titulo %}¡Pedido confirmado! | CLASISCO{% endblock %}
+
+{% block contenido %}
+<section class="seccion">
+  <div class="container">
+    <div class="confirmacion-card text-center mx-auto">
+      <div class="confirmacion-icono">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      <span class="confirmacion-eyebrow">¡Gracias por tu compra!</span>
+      <h1 class="confirmacion-titulo">Pedido confirmado</h1>
+      <p class="text-muted">
+        Hemos recibido tu pedido y estamos preparándolo para enviarlo.
+        Te enviamos una notificación con los detalles.
+      </p>
+
+      <div class="pedido-numero-box mx-auto my-4">
+        <span class="text-muted small d-block">Número de pedido</span>
+        <span class="pedido-numero">{{ pedido.numero }}</span>
+      </div>
+
+      <div class="row g-3 text-start confirmacion-resumen">
+        <div class="col-md-6">
+          <div class="checkout-card">
+            <h6 class="fw-semibold"><i class="fa-solid fa-list-ul me-2"></i>Productos ({{ pedido.detalles.count }})</h6>
+            <ul class="list-unstyled small mb-0">
+              {% for detalle in pedido.detalles.all %}
+                <li class="d-flex justify-content-between mb-1">
+                  <span>{{ detalle.cantidad }} × {{ detalle.nombre }}{% if detalle.talla %} (Talla {{ detalle.talla }}){% endif %}</span>
+                  <span>${{ detalle.subtotal|floatformat:2 }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="checkout-card">
+            <h6 class="fw-semibold"><i class="fa-solid fa-receipt me-2"></i>Resumen</h6>
+            <div class="resumen-linea small"><span>Subtotal</span><span>${{ pedido.subtotal|floatformat:2 }}</span></div>
+            {% if pedido.descuento %}
+              <div class="resumen-linea small text-success"><span>Descuento</span><span>− ${{ pedido.descuento|floatformat:2 }}</span></div>
+            {% endif %}
+            <div class="resumen-linea small"><span>Envío</span><span>{% if pedido.envio %}${{ pedido.envio|floatformat:2 }}{% else %}Gratis{% endif %}</span></div>
+            <div class="resumen-linea small total"><span>Total</span><span>${{ pedido.total|floatformat:2 }}</span></div>
+            <p class="text-muted small mb-0 mt-2"><i class="fa-solid fa-credit-card me-1"></i>{{ pedido.get_metodo_pago_display }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex flex-wrap justify-content-center gap-3 mt-4">
+        <a class="btn btn-cta" href="{% url 'pedidos:seguimiento' pedido.numero %}">
+          <i class="fa-solid fa-truck-fast me-2"></i>Dar seguimiento al pedido
+        </a>
+        <a class="btn btn-outline-dark" href="{% url 'tienda:inicio' %}">
+          <i class="fa-solid fa-house me-2"></i>Volver al inicio
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

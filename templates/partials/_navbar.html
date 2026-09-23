@@ -1,0 +1,139 @@
+<header class="site-header">
+  <div class="topbar">
+    <div class="container d-flex justify-content-between align-items-center">
+      <span><i class="fa-solid fa-truck-fast me-2"></i>Envío gratis en compras superiores a $1,000</span>
+      <span class="d-none d-md-inline"><i class="fa-solid fa-rotate-left me-2"></i>Cambios y devoluciones en 30 días</span>
+    </div>
+  </div>
+
+  <nav class="navbar navbar-expand-lg main-nav py-3">
+    <div class="container">
+      <a class="navbar-brand brand-link" href="{% url 'tienda:inicio' %}">
+        <span class="brand-logo">CLASISCO</span>
+        <span class="brand-sub">MODA &amp; ESTILO</span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#menuMovil"
+              aria-controls="menuMovil" aria-label="Abrir menú">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse d-lg-flex justify-content-between align-items-center">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="{% url 'tienda:inicio' %}">Inicio</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Categorías
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{% url 'tienda:productos' %}">Todos los productos</a></li>
+              <li><hr class="dropdown-divider"></li>
+              {% for categoria in categorias %}
+                <li><a class="dropdown-item" href="{{ categoria.get_absolute_url }}">{{ categoria.nombre }}</a></li>
+              {% empty %}
+                <li><span class="dropdown-item-text text-muted">Próximamente…</span></li>
+              {% endfor %}
+            </ul>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'tienda:productos' %}?solo_oferta=1">Ofertas</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'tienda:productos' %}?solo_nuevo=1">Novedades</a></li>
+        </ul>
+
+        <form class="d-flex search-form my-3 my-lg-0" role="search" action="{% url 'tienda:productos' %}" method="get">
+          <input class="form-control" type="search" name="q" placeholder="Buscar productos…"
+                 value="{{ request.GET.q }}" aria-label="Buscar productos">
+          <button class="btn btn-search" type="submit" aria-label="Buscar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </button>
+        </form>
+
+        <ul class="navbar-nav icon-nav align-items-lg-center ms-lg-3">
+          <li class="nav-item position-relative me-1">
+            <a class="nav-link icon-link" href="{% url 'tienda:carrito' %}" title="Mi carrito">
+              <i class="fa-solid fa-bag-shopping"></i>
+              <span class="badge-cart" id="carrito-contador">{{ carrito_count }}</span>
+            </a>
+          </li>
+
+          {% if user.is_authenticated %}
+            <li class="nav-item dropdown">
+              <a class="nav-link icon-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Mi cuenta">
+                <i class="fa-solid fa-circle-user"></i>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end shadow">
+                <li class="px-3 py-2">
+                  <span class="fw-semibold text-dark">{{ user.get_full_name|default:user.username }}</span><br>
+                  <small class="text-muted">{{ user.email }}</small>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'usuarios:perfil' %}"><i class="fa-solid fa-id-card me-2"></i>Mi perfil</a></li>
+                <li><a class="dropdown-item" href="{% url 'usuarios:direcciones' %}"><i class="fa-solid fa-location-dot me-2"></i>Mis direcciones</a></li>
+                <li><a class="dropdown-item" href="{% url 'tienda:favoritos' %}"><i class="fa-solid fa-heart me-2"></i>Favoritos</a></li>
+                <li><a class="dropdown-item" href="{% url 'pedidos:pedidos' %}"><i class="fa-solid fa-box-open me-2"></i>Mis pedidos</a></li>
+                <li><a class="dropdown-item" href="{% url 'pedidos:notificaciones' %}">
+                  <i class="fa-solid fa-bell me-2"></i>Notificaciones
+                  {% if notificaciones_no_leidas %}<span class="badge text-bg-warning ms-1">{{ notificaciones_no_leidas }}</span>{% endif %}
+                </a></li>
+                {% if user.is_staff %}
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="fa-solid fa-toolbox me-2"></i>Administración</a></li>
+                  <li><a class="dropdown-item text-warning" href="{% url 'panel:dashboard' %}"><i class="fa-solid fa-gauge-high me-2"></i>Panel de estadísticas</a></li>
+                {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="{% url 'usuarios:cerrar_sesion' %}"><i class="fa-solid fa-right-from-bracket me-2"></i>Cerrar sesión</a></li>
+              </ul>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="nav-link icon-link" href="{% url 'usuarios:iniciar_sesion' %}" title="Iniciar sesión">
+                <i class="fa-solid fa-circle-user"></i>
+              </a>
+            </li>
+            <li class="nav-item ms-lg-2">
+              <a class="btn btn-cta" href="{% url 'usuarios:registro' %}">Crear cuenta</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<!-- Menú móvil (offcanvas) -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="menuMovil" aria-labelledby="menuMovilLabel">
+  <div class="offcanvas-header bg-dark text-white">
+    <h5 class="offcanvas-title" id="menuMovilLabel">
+      <span class="brand-logo">CLASISCO</span>
+    </h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+  </div>
+  <div class="offcanvas-body">
+    <form class="search-form mb-3" action="{% url 'tienda:productos' %}" method="get">
+      <input class="form-control" type="search" name="q" placeholder="Buscar productos…" value="{{ request.GET.q }}">
+      <button class="btn btn-search" type="submit" aria-label="Buscar"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </form>
+    <ul class="nav flex-column">
+      <li class="nav-item"><a class="nav-link" href="{% url 'tienda:inicio' %}"><i class="fa-solid fa-house me-2"></i>Inicio</a></li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'tienda:productos' %}"><i class="fa-solid fa-shirt me-2"></i>Todos los productos</a></li>
+      {% for categoria in categorias %}
+        <li class="nav-item"><a class="nav-link" href="{{ categoria.get_absolute_url }}"><i class="fa-solid fa-angle-right me-2"></i>{{ categoria.nombre }}</a></li>
+      {% endfor %}
+      <li class="nav-item"><a class="nav-link" href="{% url 'tienda:productos' %}?solo_oferta=1"><i class="fa-solid fa-tags me-2"></i>Ofertas</a></li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'tienda:carrito' %}"><i class="fa-solid fa-bag-shopping me-2"></i>Carrito <span class="badge-cart ms-1">{{ carrito_count }}</span></a></li>
+      {% if user.is_authenticated %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'usuarios:perfil' %}"><i class="fa-solid fa-id-card me-2"></i>Mi perfil</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'pedidos:pedidos' %}"><i class="fa-solid fa-box-open me-2"></i>Mis pedidos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'pedidos:notificaciones' %}"><i class="fa-solid fa-bell me-2"></i>Notificaciones
+          {% if notificaciones_no_leidas %}<span class="badge text-bg-warning ms-1">{{ notificaciones_no_leidas }}</span>{% endif %}</a></li>
+        <li class="nav-item mt-2">
+          <a class="btn btn-cta w-100" href="{% url 'usuarios:cerrar_sesion' %}"><i class="fa-solid fa-right-from-bracket me-2"></i>Cerrar sesión</a>
+        </li>
+      {% else %}
+        <li class="nav-item mt-3">
+          <a class="btn btn-cta w-100 mb-2" href="{% url 'usuarios:registro' %}">Crear cuenta</a>
+          <a class="btn btn-outline-dark w-100" href="{% url 'usuarios:iniciar_sesion' %}">Iniciar sesión</a>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+</div>

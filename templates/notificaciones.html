@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block titulo %}Notificaciones | CLASISCO{% endblock %}
+
+{% block contenido %}
+<div class="page-header">
+  <div class="container d-flex justify-content-between align-items-end flex-wrap gap-2">
+    <div>
+      <h1 class="page-title">Notificaciones</h1>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item"><a href="{% url 'tienda:inicio' %}">Inicio</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Notificaciones</li>
+        </ol>
+      </nav>
+    </div>
+    {% if avisos %}
+      <form method="post" action="{% url 'pedidos:notificaciones' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-dark btn-sm">
+          <i class="fa-solid fa-check-double me-1"></i>Marcar todas como leídas
+        </button>
+      </form>
+    {% endif %}
+  </div>
+</div>
+
+<section class="seccion">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        {% if avisos %}
+          <div class="list-group notificaciones-list">
+            {% for aviso in avisos %}
+              <div class="list-group-item notificacion-item {% if not aviso.leida %}no-leida{% endif %}">
+                <div class="d-flex gap-3">
+                  <div class="notificacion-icono">
+                    <i class="fa-solid fa-bell"></i>
+                  </div>
+                  <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between flex-wrap gap-2">
+                      <strong>{{ aviso.titulo }}</strong>
+                      <small class="text-muted">{{ aviso.creado|date:"d M Y H:i" }}</small>
+                    </div>
+                    <p class="text-muted small mb-0">{{ aviso.mensaje }}</p>
+                  </div>
+                  {% if not aviso.leida %}<span class="badge text-bg-warning align-self-start">Nueva</span>{% endif %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="text-center py-5">
+            <i class="fa-regular fa-bell-slash fa-4x text-muted mb-3"></i>
+            <h3>No tienes notificaciones</h3>
+            <p class="text-muted">Te avisaremos aquí sobre tus pedidos y promociones.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

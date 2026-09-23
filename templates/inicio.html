@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block titulo %}CLASISCO | Tienda de ropa{% endblock %}
+
+{% block contenido %}
+
+<!-- Banner principal -->
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="row align-items-center">
+      <div class="col-lg-6 hero-text">
+        <span class="hero-eyebrow">{% now "Y" as anyo %}Colección {{ anyo }}</span>
+        <h1 class="hero-titulo">Viste con <em>estilo</em>,<br>sentirse <em>clásico</em>.</h1>
+        <p class="hero-descripcion">
+          Descubre la nueva temporada de CLASISCO: prendas seleccionadas para
+          acompañar cada momento de tu día. Calidad, comodidad y elegancia.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+          <a class="btn btn-cta btn-lg" href="{% url 'tienda:productos' %}">Ver colección</a>
+          <a class="btn btn-outline-light btn-lg" href="{% url 'tienda:productos' %}?solo_oferta=1">Ofertas</a>
+        </div>
+      </div>
+      <div class="col-lg-6 d-none d-lg-block text-center">
+        <div class="hero-figura">
+          <i class="fa-solid fa-shirt"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Categorías -->
+<section class="seccion">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-titulo">Categorías</h2>
+      <a class="section-ver-mas" href="{% url 'tienda:productos' %}">Ver todo <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="row g-3">
+      {% for categoria in categorias %}
+        <div class="col-6 col-md-4 col-lg-3">
+          <a class="category-card" href="{{ categoria.get_absolute_url }}">
+            <div class="category-icono">
+              <i class="fa-solid fa-vest"></i>
+            </div>
+            <h3>{{ categoria.nombre }}</h3>
+            <span>{{ categoria.productos.count }} productos</span>
+          </a>
+        </div>
+      {% empty %}
+        <div class="col-12 text-center text-muted py-4">Las categorías estarán disponibles próximamente.</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Productos destacados -->
+<section class="seccion seccion-gris">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-titulo">Productos destacados</h2>
+      <a class="section-ver-mas" href="{% url 'tienda:productos' %}?solo_destacado=1">Ver todos <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="row g-4">
+      {% for producto in productos_destacados %}
+        <div class="col-6 col-md-4 col-lg-3">
+          {% include "partials/tarjeta_producto.html" %}
+        </div>
+      {% empty %}
+        <div class="col-12 text-center text-muted py-4">Aún no hay productos destacados.</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Ofertas -->
+<section class="seccion">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-titulo">Ofertas especiales</h2>
+      <a class="section-ver-mas" href="{% url 'tienda:productos' %}?solo_oferta=1">Ver ofertas <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="row g-4">
+      {% for producto in productos_oferta %}
+        <div class="col-6 col-md-4 col-lg-3">
+          {% include "partials/tarjeta_producto.html" %}
+        </div>
+      {% empty %}
+        <div class="col-12 text-center text-muted py-4">No hay ofertas activas por el momento.</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Recién llegados -->
+<section class="seccion seccion-gris">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-titulo">Novedades</h2>
+      <a class="section-ver-mas" href="{% url 'tienda:productos' %}?solo_nuevo=1">Ver novedades <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="row g-4">
+      {% for producto in productos_recientes %}
+        <div class="col-6 col-md-4 col-lg-3">
+          {% include "partials/tarjeta_producto.html" %}
+        </div>
+      {% empty %}
+        <div class="col-12 text-center text-muted py-4">Próximamente nuevos productos.</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Marcas -->
+<section class="seccion">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-titulo">Marcas</h2>
+    </div>
+    <div class="brand-strip">
+      {% for marca in marcas %}
+        <a class="brand-item" href="{% url 'tienda:productos' %}?marca={{ marca.slug }}">
+          {% if marca.logo %}
+            <img src="{{ marca.logo.url }}" alt="{{ marca.nombre }}">
+          {% else %}
+            <span>{{ marca.nombre }}</span>
+          {% endif %}
+        </a>
+      {% empty %}
+        <span class="text-muted">Próximamente más marcas.</span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Ventajas -->
+<section class="ventajas">
+  <div class="container">
+    <div class="row g-4 text-center">
+      <div class="col-6 col-lg-3">
+        <i class="fa-solid fa-truck-fast ventaja-icono"></i>
+        <h4>Envío gratis</h4>
+        <p class="text-muted mb-0">en compras superiores a $1,000</p>
+      </div>
+      <div class="col-6 col-lg-3">
+        <i class="fa-solid fa-shield-halved ventaja-icono"></i>
+        <h4>Compra segura</h4>
+        <p class="text-muted mb-0">tus datos siempre protegidos</p>
+      </div>
+      <div class="col-6 col-lg-3">
+        <i class="fa-solid fa-rotate-left ventaja-icono"></i>
+        <h4>Devoluciones</h4>
+        <p class="text-muted mb-0">hasta 30 días después de la compra</p>
+      </div>
+      <div class="col-6 col-lg-3">
+        <i class="fa-solid fa-headset ventaja-icono"></i>
+        <h4>Soporte 5 días</h4>
+        <p class="text-muted mb-0">atención personalizada</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

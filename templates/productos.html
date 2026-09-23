@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block titulo %}Productos | CLASISCO{% endblock %}
+
+{% block contenido %}
+<div class="page-header">
+  <div class="container">
+    <h1 class="page-title">
+      {% if categoria %}{{ categoria.nombre }}{% elif query %}Resultados para “{{ query }}”{% else %}Todos los productos{% endif %}
+    </h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="{% url 'tienda:inicio' %}">Inicio</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Productos</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<section class="seccion">
+  <div class="container">
+    <div class="row">
+      <!-- Filtros -->
+      <aside class="col-lg-3 mb-4 mb-lg-0">
+        <form method="get" action="{% url 'tienda:productos' %}" class="filters-card">
+          {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+          {% if categoria_slug %}<input type="hidden" name="categoria" value="{{ categoria_slug }}">{% endif %}
+
+          <h5 class="filters-titulo"><i class="fa-solid fa-filter me-2"></i>Filtros</h5>
+
+          <div class="filter-grupo">
+            <h6>Marcas</h6>
+            {% for marca in marcas %}
+              <div class="form-check filtro-automatico">
+                <input class="form-check-input" type="checkbox" name="marca" value="{{ marca.slug }}"
+                       id="marca-{{ marca.id }}" {% if marca_slug == marca.slug %}checked{% endif %}>
+                <label class="form-check-label" for="marca-{{ marca.id }}">{{ marca.nombre }}</label>
+              </div>
+            {% endfor %}
+          </div>
+
+          <div class="filter-grupo">
+            <h6>Tallas</h6>
+            {% for talla in tallas %}
+              <div class="form-check filtro-automatico">
+                <input class="form-check-input" type="checkbox" name="talla" value="{{ talla.id }}"
+                       id="talla-{{ talla.id }}" {% if talla_id == talla.id|stringformat:"s" %}checked{% endif %}>
+                <label class="form-check-label" for="talla-{{ talla.id }}">{{ talla.nombre }}</label>
+              </div>
+            {% endfor %}
+          </div>
+
+          <div class="filter-grupo">
+            <h6>Colores</h6>
+            <div class="d-flex flex-wrap gap-2">
+              {% for color in colores %}
+                <div class="filtro-automatico">
+                  <input class="btn-check" type="checkbox" name="color" value="{{ color.id }}"
+                         id="color-{{ color.id }}" {% if color_id == color.id|stringformat:"s" %}checked{% endif %}>
+                  <label class="color-dot" for="color-{{ color.id }}" style="--color:{{ color.codigo }}"
+                         title="{{ color.nombre }}"></label>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="filter-grupo">
+            <h6>Opciones</h6>
+            <div class="form-check filtro-automatico">
+              <input class="form-check-input" type="checkbox" name="solo_oferta" value="1" id="filtro-oferta"
+                     {% if solo_oferta %}checked{% endif %}>
+              <label class="form-check-label" for="filtro-oferta"><i class="fa-solid fa-tags me-1"></i>Solo ofertas</label>
+            </div>
+            <div class="form-check filtro-automatico">
+              <input class="form-check-input" type="checkbox" name="solo_nuevo" value="1" id="filtro-nuevo"
+                     {% if solo_nuevo %}checked{% endif %}>
+              <label class="form-check-label" for="filtro-nuevo"><i class="fa-solid fa-sparkles me-1"></i>Solo novedades</label>
+            </div>
+            <div class="form-check filtro-automatico">
+              <input class="form-check-input" type="checkbox" name="solo_destacado" value="1" id="filtro-destacado"
+                     {% if solo_destacado %}checked{% endif %}>
+              <label class="form-check-label" for="filtro-destacado"><i class="fa-solid fa-star me-1"></i>Destacados</label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-cta w-100">Aplicar filtros</button>
+          <a class="btn btn-outline-dark w-100 mt-2" href="{% url 'tienda:productos' %}">Limpiar</a>
+        </form>
+      </aside>
+
+      <!-- Listado -->
+      <div class="col-lg-9">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <p class="text-muted mb-0">
+            {% with total=productos.paginator.count %}{{ total }} producto{{ total|pluralize }}{% endwith %}
+          </p>
+          <form method="get" class="d-flex align-items-center gap-2">
+            {% for key, valor in request.GET.items %}
+              {% if key != "orden" %}<input type="hidden" name="{{ key }}" value="{{ valor }}">{% endif %}
+            {% endfor %}
+            <label class="text-muted small mb-0" for="orden">Ordenar:</label>
+            <select class="form-select form-select-sm" id="orden" name="orden" onchange="this.form.submit()">
+              <option value="-creado" {% if ordenar == "-creado" %}selected{% endif %}>Relevancia</option>
+              <option value="-vendidos" {% if ordenar == "-vendidos" %}selected{% endif %}>Más vendidos</option>
+              <option value="precio" {% if ordenar == "precio" %}selected{% endif %}>Precio: menor a mayor</option>
+              <option value="-precio" {% if ordenar == "-precio" %}selected{% endif %}>Precio: mayor a menor</option>
+              <option value="nombre" {% if ordenar == "nombre" %}selected{% endif %}>Nombre (A–Z)</option>
+            </select>
+          </form>
+        </div>
+
+        <div class="row g-4">
+          {% for producto in productos %}
+            <div class="col-6 col-md-4">
+              {% include "partials/tarjeta_producto.html" %}
+            </div>
+          {% empty %}
+            <div class="col-12 text-center py-5">
+              <i class="fa-solid fa-box-open fa-3x text-muted mb-3"></i>
+              <h4>No encontramos productos</h4>
+              <p class="text-muted">Prueba con otros filtros o términos de búsqueda.</p>
+              <a class="btn btn-cta" href="{% url 'tienda:productos' %}">Ver todos</a>
+            </div>
+          {% endfor %}
+        </div>
+
+        {% if productos.has_other_pages %}
+          <nav class="mt-5" aria-label="Paginación">
+            <ul class="pagination justify-content-center">
+              {% if productos.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ productos.previous_page_number }}{% for key, valor in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ valor }}{% endif %}{% endfor %}">&laquo;</a></li>
+              {% endif %}
+              {% for num in productos.paginator.page_range %}
+                <li class="page-item {% if productos.number == num %}active{% endif %}">
+                  <a class="page-link" href="?page={{ num }}{% for key, valor in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ valor }}{% endif %}{% endfor %}">{{ num }}</a>
+                </li>
+              {% endfor %}
+              {% if productos.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ productos.next_page_number }}{% for key, valor in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ valor }}{% endif %}{% endfor %}">&raquo;</a></li>
+              {% endif %}
+            </ul>
+          </nav>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

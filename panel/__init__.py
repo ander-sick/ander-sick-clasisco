@@ -1,0 +1,1 @@
+"""Aplicación del panel administrativo de CLASISCO."""

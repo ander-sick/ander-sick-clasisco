@@ -1,0 +1,13 @@
+# ============================================================
+# CLASISCO - Dependencias del proyecto
+# Instalación:  pip install -r requirements.txt
+# ============================================================
+
+Django>=5.0,<6.0
+djangorestframework>=3.15.0
+python-dotenv>=1.0.1
+Pillow>=10.4.0
+
+# Base de datos en producción (PostgreSQL).
+# Durante el desarrollo se usa SQLite y este paquete no es necesario.
+psycopg[binary]>=3.2.0

@@ -1,0 +1,128 @@
+{% extends "panel/base_admin.html" %}
+{% block titulo %}Resumen | Panel CLASISCO{% endblock %}
+
+{% block contenido %}
+<h1 class="admin-titulo"><i class="fa-solid fa-gauge-high me-2"></i>Resumen de la tienda</h1>
+<p class="text-muted">Vista general del rendimiento de CLASISCO.</p>
+<div id="datos-panel" data-url="{% url 'panel:api_estadisticas' %}"></div>
+
+<!-- Tarjetas de resumen -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icono bg-oro"><i class="fa-solid fa-dollar-sign"></i></div>
+      <div>
+        <span class="stat-valor">${{ resumen.ventas_totales|floatformat:2 }}</span>
+        <span class="stat-etiqueta">Ventas totales</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icono bg-verde"><i class="fa-solid fa-box-open"></i></div>
+      <div>
+        <span class="stat-valor">{{ resumen.total_pedidos }}</span>
+        <span class="stat-etiqueta">Pedidos ({{ resumen.pedidos_ultimos_30_dias }} en 30 días)</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icono bg-azul"><i class="fa-solid fa-users"></i></div>
+      <div>
+        <span class="stat-valor">{{ resumen.total_clientes }}</span>
+        <span class="stat-etiqueta">Clientes registrados</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="stat-card">
+      <div class="stat-icono bg-rojo"><i class="fa-solid fa-shirt"></i></div>
+      <div>
+        <span class="stat-valor">{{ resumen.total_productos }}</span>
+        <span class="stat-etiqueta">Productos activos</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Gráficos -->
+<div class="row g-3 mb-4">
+  <div class="col-lg-8">
+    <div class="panel-card">
+      <h5 class="panel-card-titulo"><i class="fa-solid fa-chart-line me-2"></i>Ingresos mensuales</h5>
+      <canvas id="chart-ingresos" height="120"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="panel-card">
+      <h5 class="panel-card-titulo"><i class="fa-solid fa-chart-pie me-2"></i>Pedidos por estado</h5>
+      <canvas id="chart-estados" height="200"></canvas>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="panel-card">
+      <h5 class="panel-card-titulo"><i class="fa-solid fa-trophy me-2"></i>Productos más vendidos</h5>
+      <canvas id="chart-top" height="180"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="panel-card">
+      <h5 class="panel-card-titulo"><i class="fa-solid fa-triangle-exclamation me-2"></i>Inventario bajo (≤ 5 unidades)</h5>
+      {% if stock_bajo %}
+        <table class="table table-sm align-middle">
+          <thead><tr><th>Producto</th><th>Categoría</th><th class="text-end">Stock</th></tr></thead>
+          <tbody>
+            {% for producto in stock_bajo %}
+              <tr>
+                <td>{{ producto.nombre|truncatechars:35 }}</td>
+                <td>{{ producto.categoria.nombre }}</td>
+                <td class="text-end">
+                  <span class="badge {% if producto.stock == 0 %}text-bg-danger{% else %}text-bg-warning{% endif %}">
+                    {{ producto.stock }}
+                  </span>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p class="text-muted mb-0">No hay productos con inventario bajo. 👍</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Últimos pedidos -->
+<div class="panel-card mt-3">
+  <h5 class="panel-card-titulo"><i class="fa-solid fa-clock-rotate-left me-2"></i>Últimos pedidos</h5>
+  {% if ultimos_pedidos %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Número</th><th>Cliente</th><th>Fecha</th><th>Estado</th><th>Pago</th><th class="text-end">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pedido in ultimos_pedidos %}
+            <tr>
+              <td><a href="{% url 'admin:pedidos_pedido_change' pedido.pk %}">{{ pedido.numero }}</a></td>
+              <td>{{ pedido.usuario }}</td>
+              <td>{{ pedido.creado|date:"d M Y H:i" }}</td>
+              <td><span class="badge estado-badge estado-{{ pedido.estado.slug }}">{{ pedido.estado.nombre }}</span></td>
+              <td>{{ pedido.get_estado_pago_display }}</td>
+              <td class="text-end fw-semibold">${{ pedido.total|floatformat:2 }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-muted mb-0">Aún no hay pedidos registrados.</p>
+  {% endif %}
+</div>
+{% endblock %}

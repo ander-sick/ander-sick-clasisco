@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block titulo %}Mi perfil | CLASISCO{% endblock %}
+
+{% block contenido %}
+<div class="page-header">
+  <div class="container">
+    <h1 class="page-title">Mi perfil</h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="{% url 'tienda:inicio' %}">Inicio</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Mi perfil</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<section class="seccion">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="perfil-card text-center">
+          <div class="avatar-circular mx-auto">
+            {% if perfil.avatar %}
+              <img src="{{ perfil.avatar.url }}" alt="{{ user.username }}">
+            {% else %}
+              <i class="fa-solid fa-user"></i>
+            {% endif %}
+          </div>
+          <h2 class="h4 mt-3 mb-1">{{ user.get_full_name|default:user.username }}</h2>
+          <p class="text-muted small mb-3">{{ user.email }}</p>
+          <a class="btn btn-outline-dark btn-sm" href="{% url 'usuarios:editar_perfil' %}">
+            <i class="fa-solid fa-pen me-1"></i>Editar mi perfil
+          </a>
+          <hr>
+          <div class="row text-center small">
+            <div class="col-4">
+              <strong class="d-block fs-5">{{ total_pedidos }}</strong>Pedidos
+            </div>
+            <div class="col-4">
+              <strong class="d-block fs-5">{{ total_direcciones }}</strong>Direcciones
+            </div>
+            <div class="col-4">
+              <strong class="d-block fs-5">{{ total_favoritos }}</strong>Favoritos
+            </div>
+          </div>
+        </div>
+        <div class="perfil-menu mt-3">
+          <a href="{% url 'pedidos:pedidos' %}"><i class="fa-solid fa-box-open me-2"></i>Mis pedidos</a>
+          <a href="{% url 'usuarios:direcciones' %}"><i class="fa-solid fa-location-dot me-2"></i>Mis direcciones</a>
+          <a href="{% url 'tienda:favoritos' %}"><i class="fa-solid fa-heart me-2"></i>Mis favoritos</a>
+          <a href="{% url 'pedidos:notificaciones' %}"><i class="fa-solid fa-bell me-2"></i>Notificaciones</a>
+        </div>
+      </div>
+
+      <div class="col-lg-8">
+        {% if form %}
+          <div class="checkout-card">
+            <h5 class="checkout-titulo"><i class="fa-solid fa-pen-to-square me-2"></i>Editar información</h5>
+            <form method="post" enctype="multipart/form-data" novalidate>
+              {% csrf_token %}
+              {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label" for="{{ form.nombre.id_for_label }}">Nombre</label>
+                  {{ form.nombre }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="{{ form.apellidos.id_for_label }}">Apellidos</label>
+                  {{ form.apellidos }}
+                </div>
+                <div class="col-12">
+                  <label class="form-label" for="{{ form.email.id_for_label }}">Correo electrónico</label>
+                  {{ form.email }}
+                  {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors }}</div>{% endif %}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="{{ form.telefono.id_for_label }}">Teléfono</label>
+                  {{ form.telefono }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="{{ form.fecha_nacimiento.id_for_label }}">Fecha de nacimiento</label>
+                  {{ form.fecha_nacimiento }}
+                </div>
+                <div class="col-12">
+                  <label class="form-label" for="{{ form.avatar.id_for_label }}">Foto de perfil</label>
+                  {{ form.avatar }}
+                </div>
+              </div>
+              <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-cta"><i class="fa-solid fa-floppy-disk me-2"></i>Guardar cambios</button>
+                <a class="btn btn-outline-dark" href="{% url 'usuarios:perfil' %}">Cancelar</a>
+              </div>
+            </form>
+          </div>
+        {% else %}
+          <div class="checkout-card">
+            <h5 class="checkout-titulo"><i class="fa-solid fa-circle-info me-2"></i>Información de mi cuenta</h5>
+            <div class="row">
+              <div class="col-sm-6">
+                <p class="text-muted small mb-1">Nombre de usuario</p>
+                <p class="fw-semibold">{{ user.username }}</p>
+              </div>
+              <div class="col-sm-6">
+                <p class="text-muted small mb-1">Miembro desde</p>
+                <p class="fw-semibold">{{ user.date_joined|date:"d M Y" }}</p>
+              </div>
+              <div class="col-sm-6">
+                <p class="text-muted small mb-1">Teléfono</p>
+                <p class="fw-semibold">{{ perfil.telefono|default:"—" }}</p>
+              </div>
+              <div class="col-sm-6">
+                <p class="text-muted small mb-1">Fecha de nacimiento</p>
+                <p class="fw-semibold">{{ perfil.fecha_nacimiento|date:"d M Y"|default:"—" }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="checkout-card mt-4">
+            <h5 class="checkout-titulo"><i class="fa-solid fa-shield-halved me-2"></i>Seguridad</h5>
+            <p class="text-muted small">
+              La contraseña y demás datos sensibles se gestionan con los mecanismos
+              de seguridad de Django y nunca se muestran en texto plano.
+            </p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
