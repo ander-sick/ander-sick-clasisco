@@ -6,8 +6,8 @@
 .admin-body {
   margin: 0;
   font-family: "Poppins", "Segoe UI", sans-serif;
-  background: #f4f5f7;
-  color: #2c2d31;
+  background: #f5f0e6;
+  color: #3d2c2e;
 }
 
 .admin-layout { display: flex; min-height: 100vh; }
@@ -16,8 +16,8 @@
 .admin-sidebar {
   width: 260px;
   flex-shrink: 0;
-  background: #16171b;
-  color: rgba(255,255,255,0.8);
+  background: #3d2c2e;
+  color: rgba(253,251,247,0.8);
   display: flex;
   flex-direction: column;
   position: sticky;
@@ -33,13 +33,13 @@
   font-size: 1.4rem;
   font-weight: 700;
   letter-spacing: 0.18em;
-  color: #fff;
+  color: #fdfbf7;
   display: block;
 }
 .admin-brand-sub {
   font-size: 0.62rem;
   letter-spacing: 0.3em;
-  color: #c9a24b;
+  color: #bc6c25;
   text-transform: uppercase;
 }
 
@@ -50,35 +50,35 @@
   align-items: center;
   gap: 0.7rem;
   padding: 0.72rem 1.4rem;
-  color: rgba(255,255,255,0.75);
+  color: rgba(253,251,247,0.75);
   text-decoration: none;
   font-size: 0.9rem;
   border-left: 3px solid transparent;
   transition: all 0.2s ease;
 }
 .admin-nav-item a:hover {
-  background: rgba(201, 162, 75, 0.12);
-  color: #c9a24b;
-  border-left-color: #c9a24b;
+  background: rgba(188, 108, 37, 0.18);
+  color: #bc6c25;
+  border-left-color: #bc6c25;
 }
 
 .admin-sidebar-footer { padding: 1rem; border-top: 1px solid rgba(255,255,255,0.1); }
 .admin-sidebar-footer .btn {
-  background: #c9a24b;
-  color: #16171b;
+  background: #bc6c25;
+  color: #fdfbf7;
   font-weight: 600;
   border-radius: 2px;
 }
-.admin-sidebar-footer .btn:hover { background: #a9862f; color: #fff; }
+.admin-sidebar-footer .btn:hover { background: #a35a1d; color: #fff; }
 
 /* Barra superior */
 .admin-topbar {
-  background: #16171b;
+  background: #3d2c2e;
   padding: 0.8rem 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
-  border-bottom: 3px solid #c9a24b;
+  border-bottom: 3px solid #bc6c25;
 }
 
 /* Contenido */
@@ -88,14 +88,14 @@
 .admin-titulo {
   font-family: "Playfair Display", Georgia, serif;
   font-weight: 600;
-  color: #16171b;
+  color: #3d2c2e;
   font-size: 1.7rem;
 }
 
 /* Tarjetas de estadísticas */
 .stat-card {
   background: #fff;
-  border: 1px solid #e6e8eb;
+  border: 1px solid #e4dacb;
   border-radius: 4px;
   padding: 1.1rem 1.2rem;
   display: flex;
@@ -114,28 +114,28 @@
   color: #fff;
   flex-shrink: 0;
 }
-.bg-oro { background: #c9a24b; }
-.bg-verde { background: #2e8b57; }
+.bg-oro { background: #bc6c25; }
+.bg-verde { background: #606c38; }
 .bg-azul { background: #2c6fbb; }
 .bg-rojo { background: #b03a2e; }
 
 .stat-valor { display: block; font-size: 1.25rem; font-weight: 600; }
-.stat-etiqueta { font-size: 0.72rem; color: #7d7e84; }
+.stat-etiqueta { font-size: 0.72rem; color: #8c7b72; }
 
 /* Paneles */
 .panel-card {
   background: #fff;
-  border: 1px solid #e6e8eb;
+  border: 1px solid #e4dacb;
   border-radius: 4px;
   padding: 1.4rem;
 }
 .panel-card-titulo {
   font-weight: 600;
-  color: #16171b;
+  color: #3d2c2e;
   font-size: 1rem;
   margin-bottom: 1rem;
   padding-bottom: 0.7rem;
-  border-bottom: 1px solid #eceef0;
+  border-bottom: 1px solid #ece4d6;
 }
 
 /* Tablas */
@@ -143,10 +143,10 @@
   font-size: 0.74rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #7d7e84;
-  border-bottom: 2px solid #e6e8eb;
+  color: #8c7b72;
+  border-bottom: 2px solid #e4dacb;
 }
-.admin-contenido .table a { color: #a9862f; text-decoration: none; }
+.admin-contenido .table a { color: #bc6c25; text-decoration: none; }
 
 /* Badges de estado */
 .estado-badge { border-radius: 2px; font-size: 0.72rem; }
